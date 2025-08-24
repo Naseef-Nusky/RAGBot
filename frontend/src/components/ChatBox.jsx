@@ -201,7 +201,7 @@ const DocsManager = ({ docs, setDocs, fetchDocs, showToast }) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      await axios.post('http://localhost:5000/api/upload', formData, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       showToast('PDF uploaded successfully!', 'success');
