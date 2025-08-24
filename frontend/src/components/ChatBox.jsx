@@ -91,7 +91,7 @@ const ChatBox = ({ messages, setMessages }) => {
     setLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/ask', { question: q });
+      const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/ask`, { question: q });
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: res.data.answer || 'No answer found' },
@@ -217,7 +217,7 @@ const DocsManager = ({ docs, setDocs, fetchDocs, showToast }) => {
   const handleDelete = async (docId) => {
     if (!window.confirm('Are you sure you want to delete this document?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/docs/${docId}`);
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/docs/${docId}`);
       showToast('Document deleted successfully!', 'success');
       fetchDocs();
     } catch (err) {
@@ -283,7 +283,7 @@ export default function PdfManager() {
 
   const fetchDocs = useCallback(async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/docs');
+      const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/docs`);
       setDocs(res.data.docs || []);
     } catch (err) {
       showToast('Failed to fetch documents', 'error');
