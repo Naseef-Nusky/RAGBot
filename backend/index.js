@@ -1,11 +1,19 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import multer from 'multer';
-import fs from 'fs';
-import pdfParse from 'pdf-parse';
-import OpenAI from 'openai';
-import { Pinecone } from '@pinecone-database/pinecone';
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+import express from "express";
+import cors from "cors";
+import multer from "multer";
+import fs from "fs";
+import pdfParse from "pdf-parse";
+import OpenAI from "openai";
+import { Pinecone } from "@pinecone-database/pinecone";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+
 
 const app = express();
 app.use(cors());
