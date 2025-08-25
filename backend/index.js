@@ -261,7 +261,6 @@ app.get('/api/docs/:docId', async (req, res) => {
   }
 });
 
-// Vercel serverless function handler
 export default app;
 
 // Local development server
