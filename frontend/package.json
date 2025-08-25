@@ -16,9 +16,9 @@
     "web-vitals": "^2.1.4"
   },
 "scripts": {
-  "start": "dotenv -e ../.env react-scripts start",
-  "build": "dotenv -e ../.env react-scripts build",
-  "test": "dotenv -e ../.env react-scripts test"
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "test": "react-scripts test"
 },
   "eslintConfig": {
     "extends": [

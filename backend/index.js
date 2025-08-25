@@ -11,15 +11,18 @@ import { Pinecone } from "@pinecone-database/pinecone";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-
+// Load environment variables from .env in the same directory
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 
-const upload = multer({ dest: 'uploads/' });
+// Use memory storage for Vercel compatibility
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
@@ -28,7 +31,6 @@ const index = pinecone.Index(INDEX_NAME);
 
 // In-memory storage for document metadata (in production, use a database)
 const documentStore = new Map();
-
 
 function chunkText(text, chunkSize = 1200, overlap = 200) {
   const clean = text.replace(/\s+/g, ' ').trim();
@@ -48,7 +50,8 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-    const data = await pdfParse(fs.readFileSync(req.file.path));
+    // Use buffer instead of file system for Vercel compatibility
+    const data = await pdfParse(req.file.buffer);
     const text = data.text || '';
     if (!text.trim()) return res.status(400).json({ error: 'PDF has no extractable text' });
 
@@ -85,7 +88,6 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       uploadedAt: new Date().toISOString()
     });
 
-    fs.unlinkSync(req.file.path);
     res.json({ 
       ok: true, 
       docId, 
@@ -124,12 +126,11 @@ app.post('/api/ask', async (req, res) => {
       .map((c, idx) => `#${idx + 1} [${c.id} | ${c.metadata.filename}] ${c.metadata.text}`)
       .join('\n\n---\n\n');
 
-      const systemPrompt = `
-      You are a helpful assistant. 
-      Use the provided Context to answer the user's question, but you may also draw on your general knowledge 
-      to provide a complete and accurate answer if the context is insufficient.
-      `;
-
+    const systemPrompt = `
+    You are a helpful assistant. 
+    Use the provided Context to answer the user's question, but you may also draw on your general knowledge 
+    to provide a complete and accurate answer if the context is insufficient.
+    `;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -226,7 +227,6 @@ app.delete('/api/docs/:docId', async (req, res) => {
   }
 });
 
-
 // 5) Get document details with chunks
 app.get('/api/docs/:docId', async (req, res) => {
   try {
@@ -261,6 +261,11 @@ app.get('/api/docs/:docId', async (req, res) => {
   }
 });
 
-// -------------------- Start server --------------------
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
+// Vercel serverless function handler
+export default app;
+
+// Local development server
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
+}
