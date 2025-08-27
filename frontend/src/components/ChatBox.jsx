@@ -227,25 +227,26 @@ const DocsManager = ({ docs, setDocs, fetchDocs, showToast }) => {
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 space-y-6">
-      <div className="flex items-center gap-4">
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={(e) => setFile(e.target.files[0])}
-          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={handleUpload}
-          disabled={uploading}
-          className={`py-2 px-4 rounded-md text-white font-semibold ${
-            uploading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 flex items-center gap-1'
-          }`}
-        >
-          {uploading ? 'Uploading...' : <><UploadCloud size={18} /> Upload</>}
-        </button>
-      </div>
+<div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+  <input
+    type="file"
+    accept="application/pdf"
+    onChange={(e) => setFile(e.target.files[0])}
+    className="w-full sm:w-auto border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  <button
+    onClick={handleUpload}
+    disabled={uploading}
+    className={`w-full sm:w-auto py-2 px-4 rounded-md text-white font-semibold ${
+      uploading
+        ? 'bg-gray-400 cursor-not-allowed'
+        : 'bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-1'
+    }`}
+  >
+    {uploading ? 'Uploading...' : <><UploadCloud size={18} /> Upload</>}
+  </button>
+</div>
+
 
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
