@@ -261,9 +261,6 @@ app.get('/api/docs/:docId', async (req, res) => {
 });
 
 export default app;
-
-// Local development server
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
-}
+// Always start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
