@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import multer from "multer";
-import pdfParse from 'pdf-parse';
+// import pdfParse from 'pdf-parse';
 import fs from "fs";
 import OpenAI from "openai";
 import { Pinecone } from "@pinecone-database/pinecone";
