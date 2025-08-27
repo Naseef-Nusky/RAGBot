@@ -18,6 +18,9 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 
+app.get('/', (_req, res) => {
+  res.send('RAG Chatbot Backend is running!');
+});
 // Use memory storage for Vercel compatibility
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
