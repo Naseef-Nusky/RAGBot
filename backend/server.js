@@ -47,16 +47,26 @@ function chunkText(text, chunkSize = 1200, overlap = 200) {
   }
   return chunks;
 }
-
 // 1) Upload PDF → store embeddings
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
 
-    // Use buffer instead of file system for Vercel compatibility
-    const data = await pdfParse(req.file.buffer);
-    const text = data.text || '';
-    if (!text.trim()) return res.status(400).json({ error: 'PDF has no extractable text' });
+    let text = "";
+
+    try {
+      const data = await pdfParse(req.file.buffer);
+      text = data.text || "";
+    } catch (parseErr) {
+      console.error("PDF parsing failed:", parseErr.message);
+      return res.status(400).json({ error: "Failed to parse PDF. It may be scanned or corrupted." });
+    }
+
+    if (!text.trim()) {
+      return res.status(400).json({ error: "PDF has no extractable text" });
+    }
 
     const chunks = chunkText(text);
 
@@ -73,16 +83,15 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       chunks.map((chunk, i) => ({
         id: vectorIds[i],
         values: vectors[i],
-        metadata: { 
-          text: chunk, 
-          filename: req.file.originalname, 
+        metadata: {
+          text: chunk,
+          filename: req.file.originalname,
           docId,
-          chunkIndex: i 
+          chunkIndex: i
         }
       }))
     );
 
-    // Store document metadata
     documentStore.set(docId, {
       docId,
       filename: req.file.originalname,
@@ -91,16 +100,16 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       uploadedAt: new Date().toISOString()
     });
 
-    res.json({ 
-      ok: true, 
-      docId, 
+    res.json({
+      ok: true,
+      docId,
       chunks: chunks.length,
       filename: req.file.originalname
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to ingest PDF' });
+    console.error("Upload error:", err);
+    res.status(500).json({ error: "Failed to ingest PDF" });
   }
 });
 
