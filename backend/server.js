@@ -5,7 +5,6 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import fs from "fs";
-import pdfParse from "pdf-parse";
 import OpenAI from "openai";
 import { Pinecone } from "@pinecone-database/pinecone";
 
