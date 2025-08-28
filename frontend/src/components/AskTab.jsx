@@ -51,7 +51,7 @@ const AskTab = ({ token }) => {
 
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/api/docs/ask`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/ask`,
         { question: q },
         { headers: { Authorization: `Bearer ${token}` } }
       );
