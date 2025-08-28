@@ -9,11 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-// --- Debug: Check if env variables are loaded ---
-console.log("OPENAI_API_KEY:", process.env.OPENAI_API_KEY); // should print your key
-console.log("PORT:", process.env.PORT);
+// --- Debug: check if env variables are loaded ---
+console.log("OPENAI_API_KEY:", process.env.OPENAI_API_KEY ? "✅ Loaded" : "❌ Not Found");
+console.log("PORT:", process.env.PORT || 5000);
 
-// --- Start server in an async function ---
+// --- Start server ---
 const startServer = async () => {
   try {
     // Connect to MongoDB
@@ -24,9 +24,9 @@ const startServer = async () => {
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (err) {
     console.error("Failed to start server:", err);
-    process.exit(1);
+    process.exit(1); // exit if DB connection fails
   }
 };
 
-// --- Run the server ---
+// --- Run server ---
 startServer();
